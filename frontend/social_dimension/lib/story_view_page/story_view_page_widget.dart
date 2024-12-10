@@ -1,3 +1,9 @@
+import 'dart:async';
+
+import 'package:social_dimension/index.dart';
+import 'package:social_dimension/model/text_story.dart';
+import 'package:social_dimension/story/story_widget.dart';
+
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -20,6 +26,7 @@ class _StoryViewPageWidgetState extends State<StoryViewPageWidget> {
   late StoryViewPageModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  late Timer _timer;
 
   @override
   void initState() {
@@ -30,13 +37,41 @@ class _StoryViewPageWidgetState extends State<StoryViewPageWidget> {
     _model.textFieldFocusNode ??= FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+
+        // Parse the selected duration into seconds
+    if (TextStory.storyDuration != null) {
+      final durationParts = TextStory.storyDuration!.split(' ');
+      final durationInSeconds = int.parse(durationParts[0]) *
+          (durationParts[1] == 'min' ? 60 : 1); // Convert to seconds if in minutes
+
+      // Start a timer to remove the story after the duration
+      _timer = Timer(Duration(seconds: durationInSeconds), _deleteStory);
+    }
   }
 
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
+    _timer.cancel();
+  }
+
+    void _deleteStory() {
+    setState(() {
+      TextStory.storyText.clear();
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('"Story no longer available !"'),
+        duration: Duration(seconds: 4),
+      ),
+    );
+
+        // Navigate to StoryWidget if there is no story available
+    Future.delayed(Duration(seconds: 5), () {
+      context.go('/socialmedia');
+    });
   }
 
   @override
@@ -145,7 +180,11 @@ class _StoryViewPageWidgetState extends State<StoryViewPageWidget> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Hello by Social Dimension',
+
+                      TextStory.storyText.isNotEmpty
+                          ? TextStory.storyText.join('\n')
+                          : "No story to display",
+
                       textAlign: TextAlign.center,
                       style:
                           FlutterFlowTheme.of(context).headlineMedium.override(

@@ -1,3 +1,5 @@
+import 'package:social_dimension/model/text_story.dart';
+
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -20,6 +22,7 @@ class _StoryTextWidgetState extends State<StoryTextWidget> {
   late StoryTextModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+   String selectedDuration = "1 min";
 
   @override
   void initState() {
@@ -219,38 +222,39 @@ class _StoryTextWidgetState extends State<StoryTextWidget> {
                                           padding:
                                               EdgeInsetsDirectional.fromSTEB(
                                                   12.0, 16.0, 12.0, 16.0),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              Icon(
-                                                Icons.access_time,
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondaryBackground,
-                                                size: 20.0,
-                                              ),
-                                              Text(
-                                                '24 hours',
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          fontFamily: 'Inter',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .secondaryBackground,
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                              ),
-                                              Icon(
+                                          child: DropdownButton<String>(
+                                            value: selectedDuration,
+                                            isExpanded: true,
+                                            dropdownColor: Colors.black,
+                                            underline: SizedBox(),
+                                            icon: Icon(
                                                 Icons.arrow_drop_down,
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondaryBackground,
-                                                size: 20.0,
-                                              ),
-                                            ].divide(SizedBox(width: 8.0)),
-                                          ),
+                                                color: FlutterFlowTheme.of(context).secondaryBackground,
+                                            ),
+                                            items: [
+                                                "1 min",
+                                                "2 min",
+                                                "5 min",
+                                                "10 min",
+                                                "60 min"
+                                            ].map((String value) {
+                                                return DropdownMenuItem<String>(
+                                                    value: value,
+                                                    child: Text(
+                                                        value,
+                                                        style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                            fontFamily: 'Inter',
+                                                            color: FlutterFlowTheme.of(context).secondaryBackground,
+                                                        ),
+                                                    ),
+                                                );
+                                            }).toList(),
+                                            onChanged: (value) {
+                                                setState(() {
+                                                    selectedDuration = value!; // Update the local variable only
+                                                });
+                                            },
+                                        ),
                                         ),
                                       ),
                                     ],
@@ -278,7 +282,14 @@ class _StoryTextWidgetState extends State<StoryTextWidget> {
                     ),
                     FFButtonWidget(
                       onPressed: () async {
-                        context.pushNamed('storyViewPage');
+                        
+                          final textStory = _model.textController.text;
+                          TextStory.storyText.add(textStory);
+
+                          TextStory.storyDuration = selectedDuration;
+                          print('Selected Duration: $selectedDuration');
+                          context.pushNamed('storyViewPage');
+
                       },
                       text: 'Share Status',
                       options: FFButtonOptions(

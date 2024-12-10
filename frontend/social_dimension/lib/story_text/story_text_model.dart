@@ -15,9 +15,11 @@ class StoryTextModel extends FlutterFlowModel<StoryTextWidget> {
   FocusNode? textFieldFocusNode;
   TextEditingController? textController;
   String? Function(BuildContext, String?)? textControllerValidator;
+  String? selectedDuration;
 
   @override
   void initState(BuildContext context) {}
+  
 
   @override
   void dispose() {

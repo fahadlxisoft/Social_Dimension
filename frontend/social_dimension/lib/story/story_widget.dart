@@ -1,3 +1,5 @@
+import 'package:file_picker/file_picker.dart';
+
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -263,8 +265,38 @@ class _StoryWidgetState extends State<StoryWidget> {
                         ],
                       ),
                       FFButtonWidget(
-                        onPressed: () {
-                          print('Button pressed ...');
+                        onPressed: () async {
+                          try {
+                            FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
+
+                            if (result != null) {
+                              String? filePath = result.files.single.path; // Path for mobile
+                              Uint8List? fileBytes = result.files.single.bytes; // Bytes for web
+
+                              if (filePath != null) {
+                                // Navigate with file path (mobile)
+                                Navigator.pushNamed(
+                                  context,
+                                  'ImageDisplayPage',
+                                  arguments: {'imagePath': filePath},
+                                );
+                              } else if (fileBytes != null) {
+                                // Navigate with file bytes (web)
+                                Navigator.pushNamed(
+                                  context,
+                                  'ImageDisplayPage',
+                                  arguments: {'imageBytes': fileBytes},
+                                );
+                              } else {
+                                // No file selected
+                                print('No file selected');
+                              }
+                            } else {
+                              print('No file selected');
+                            }
+                          } catch (e) {
+                            print('Error selecting file: $e');
+                          }
                         },
                         text: 'Manage',
                         options: FFButtonOptions(
